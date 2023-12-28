@@ -40,6 +40,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.scores.ScoreHolder;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import java.io.BufferedReader;
@@ -533,7 +534,7 @@ public class PlayerClaimData implements IPlayerData {
     }
 
     public static void updateScoreFor(ServerPlayer player, ObjectiveCriteria criterion, int val) {
-        player.getScoreboard().forAllObjectives(criterion, player.getScoreboardName(), (scoreboardPlayerScore) -> scoreboardPlayerScore.setScore(val));
+        player.getScoreboard().forAllObjectives(criterion, ScoreHolder.forNameOnly(player.getScoreboardName()), (scoreboardPlayerScore) -> scoreboardPlayerScore.set(val));
     }
 
     public static void editForOfflinePlayer(MinecraftServer server, UUID uuid, int additionalClaimBlocks) {
