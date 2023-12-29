@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[${loader_version},)"
+loaderVersion="[1,)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/Flemmli97/Flan/issues"
 [[mixins]]
@@ -16,13 +16,13 @@ authors="Flemmli97"
 description='''Flan (Forge version): A serverside claiming mod'''
 [[dependencies.flan]]
 modId="minecraft"
-mandatory=true
+type="required"
 versionRange="[${mcversion},)"
 ordering="NONE"
 side="BOTH"
 [[dependencies.flan]]
 modId="neoforge"
-mandatory=true
+type="required"
 versionRange="[${forge_version},)"
 ordering="NONE"
 side="BOTH"
