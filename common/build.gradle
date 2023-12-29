@@ -9,6 +9,7 @@ configurations {
 }
 
 repositories {
+    mavenCentral()
     maven { url 'https://jitpack.io' }
     maven {
         name = "FTB"
@@ -26,6 +27,7 @@ dependencies {
     shadowCommon group: 'org.yaml', name: 'snakeyaml', version: '1.25'
 
     modImplementation dynmap_fabric
+    modImplementation squaremap
 
     modImplementation "dev.ftb.mods:ftb-ranks:${ftb_ranks}"
     modImplementation "dev.ftb.mods:ftb-chunks:${ftb_chunks}"

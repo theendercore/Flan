@@ -5,6 +5,7 @@ import io.github.flemmli97.flan.commands.CommandClaim;
 import io.github.flemmli97.flan.config.ConfigHandler;
 import io.github.flemmli97.flan.event.PlayerEvents;
 import io.github.flemmli97.flan.platform.integration.webmap.BluemapIntegration;
+import io.github.flemmli97.flan.platform.integration.webmap.SquaremapIntegration;
 import io.github.flemmli97.flan.player.LogoutTracker;
 import io.github.flemmli97.flan.player.PlayerDataHandler;
 import net.minecraft.world.level.Level;
@@ -20,13 +21,16 @@ public class ServerEvents {
     public static void serverStart(ServerAboutToStartEvent event) {
         Flan.lockRegistry(event.getServer());
         ConfigHandler.serverLoad(event.getServer());
-
-        if (ModList.get().isLoaded("bluemap"))
-            BluemapIntegration.reg(event.getServer());
     }
 
     public static void serverFinishLoad(ServerStartedEvent event) {
         PlayerDataHandler.deleteInactivePlayerData(event.getServer());
+
+        if (ModList.get().isLoaded("bluemap"))
+            BluemapIntegration.reg(event.getServer());
+
+        if (ModList.get().isLoaded("squaremap"))
+            SquaremapIntegration.reg();
     }
 
     public static void commands(RegisterCommandsEvent event) {
