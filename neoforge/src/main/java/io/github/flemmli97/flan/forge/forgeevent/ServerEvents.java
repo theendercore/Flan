@@ -30,7 +30,7 @@ public class ServerEvents {
             BluemapIntegration.reg(event.getServer());
 
         if (ModList.get().isLoaded("squaremap"))
-            SquaremapIntegration.reg();
+            SquaremapIntegration.reg(event.getServer());
     }
 
     public static void commands(RegisterCommandsEvent event) {

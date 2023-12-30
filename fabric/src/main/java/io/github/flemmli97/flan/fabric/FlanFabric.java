@@ -98,7 +98,7 @@ public class FlanFabric implements ModInitializer {
             BluemapIntegration.reg(server);
 
         if (FabricLoader.getInstance().isModLoaded("squaremap"))
-            SquaremapIntegration.reg();
+            SquaremapIntegration.reg(server);
     }
 
     public static InteractionResult useBlocks(Player p, Level world, InteractionHand hand, BlockHitResult hitResult) {

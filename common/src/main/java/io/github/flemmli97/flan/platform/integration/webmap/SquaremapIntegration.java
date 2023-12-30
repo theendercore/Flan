@@ -2,9 +2,10 @@ package io.github.flemmli97.flan.platform.integration.webmap;
 
 import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.flan.claim.Claim;
+import io.github.flemmli97.flan.claim.ClaimStorage;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xyz.jpenilla.squaremap.api.*;
 import xyz.jpenilla.squaremap.api.marker.Marker;
 import xyz.jpenilla.squaremap.api.marker.MarkerOptions;
@@ -12,31 +13,21 @@ import xyz.jpenilla.squaremap.api.marker.Rectangle;
 import xyz.jpenilla.squaremap.api.Point;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Optional;
+import java.util.*;
 
 
 public class SquaremapIntegration {
 
-    static Logger LOGGER = LoggerFactory.getLogger(SquaremapIntegration.class.getSimpleName());
 
     private static final HashMap<String, SimpleLayerProvider> markerLayers = new HashMap<>();
     private static final String markerID = "flan-claims", markerLabel = "Flan Claims";
 
-    public static void reg() {
-        LOGGER.info("register Square");
+    public static void reg(MinecraftServer server) {
         Squaremap api = SquaremapProvider.get();
 
         for (MapWorld level : api.mapWorlds()) {
+            Key tempId = Key.of(markerID + "-" + level.identifier().namespace() + "-" + level.identifier().value());
 
-            // squaremap=xyz.jpenilla:squaremap-api:1.2.3
-
-            Key tempId = Key.of(markerID + "-" + level.identifier().asString().replace(":", "-"));
-
-            LOGGER.info("level - {}", level.identifier().asString());
-            LOGGER.info("has entry - {}", level.layerRegistry().hasEntry(tempId));
-            level.layerRegistry().entries().forEach(p -> LOGGER.info("registry - {} : {}", p.right().getLabel(), p.left()));
             if (!level.layerRegistry().hasEntry(tempId)) {
                 SimpleLayerProvider layer = SimpleLayerProvider.builder(markerLabel)
                         .defaultHidden(false)
@@ -44,21 +35,28 @@ public class SquaremapIntegration {
                         .layerPriority(9)
                         .showControls(true)
                         .build();
-                LOGGER.info("marker - {}", tempId);
                 level.layerRegistry().register(tempId, layer);
                 markerLayers.put(level.identifier().asString(), layer);
             }
         }
+        new Thread(() -> {
+            for (ServerLevel level : server.getAllLevels()) {
+                for (Map.Entry<UUID, Set<Claim>> x : ClaimStorage.get(level).getClaims().entrySet()) {
+                    for (Claim claim : x.getValue()) {
+                        addClaimMarker(claim);
+                    }
+                }
+            }
+        }).start();
         WebmapCalls.squaremapLoaded = true;
     }
 
     public static void addClaimMarker(Claim claim) {
-        LOGGER.info("add claim");
         if (markerLayers.isEmpty())
             return;
 
-        double[] dim = Arrays.stream(claim.getDimensions()).mapToDouble((a) -> (double) a).toArray();
-        Rectangle marker = Marker.rectangle(Point.of(dim[0], dim[1]), Point.of(dim[2], dim[3]));
+        int[] dim = claim.getDimensions();
+        Rectangle marker = Marker.rectangle(Point.of(dim[0], dim[2]), Point.of(dim[1], dim[3]));
 
         marker.markerOptions(
                 MarkerOptions.builder()
